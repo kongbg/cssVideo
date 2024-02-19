@@ -1,0 +1,100 @@
+{
+    "type": "background",
+    "name": "人物",
+    "property": {
+        "position": {
+            "show": true,
+            "name": "位置",
+            "type": "position",
+            "value": {
+                "unit": {
+                    "label": "单位",
+                    "value": "px",
+                    "option": [
+                        {
+                            "label": "px",
+                            "value": "px"
+                        }
+                    ]
+                },
+                "x": {
+                    "label": "x",
+                    "value": 100
+                },
+                "y": {
+                    "label": "y",
+                    "value": 100
+                },
+                "zIndex": {
+                    "label": "层级",
+                    "value": 0
+                }
+            }
+        },
+        "size": {
+            "show": true,
+            "name": "尺寸",
+            "type": "size",
+            "value": {
+                "unit": {
+                    "label": "单位",
+                    "value": "px",
+                    "option": [
+                        {
+                            "label": "px",
+                            "value": "px"
+                        }
+                    ]
+                },
+                "width": {
+                    "label": "宽度",
+                    "value": 132
+                },
+                "height": {
+                    "label": "高度",
+                    "value": 132
+                }
+            }
+        },
+        "background": {
+            "show": false,
+            "name": "背景",
+            "type": "background",
+            "value": {
+                "image": {
+                    "checked": true,
+                    "url": "assets/images/rw1.png"
+                }
+            }
+        },
+        "face": {
+            "show": true,
+            "name": "表情",
+            "type": "face",
+            "value": {
+                "image": {
+                    "label": "表情",
+                    "value": "assets/images/face/1.png"
+                },
+                "width": {
+                    "label": "宽度",
+                    "value": 20
+                },
+                "height": {
+                    "label": "高度",
+                    "value": 20
+                },
+                "x": {
+                    "label": "x",
+                    "value": 42
+                },
+                "y": {
+                    "label": "y",
+                    "value": 24
+                }
+            }
+        }
+    },
+    "actions": [],
+    "styles": {}
+}
