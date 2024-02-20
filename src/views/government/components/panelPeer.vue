@@ -32,7 +32,7 @@
                             />
                         </div>
 
-                        <component :is="compMap[item.type.join('-')]" :customData="item" @change="change"></component>
+                        <component :is="compMap[item.type.join('-')]" :customData="item" :name="schema.name" @change="change"></component>
 
                     </div>
                     <el-button type="primary" size="small" @click="addAction">新增动作</el-button>
@@ -77,19 +77,21 @@ const activeNames = computed(() => {
 const activeNames2 = ref(['action'])
 
 const addAction = () => {
-    schema.value.actions.push({
-        type: ['speak'],
-        content: drawStore.currentConfInfo.content,
-        duration: 0,
-        easing: 'linear',
-        delay: 0,
-        iterations: 1,
-        shakeHead: false,
-        scaleHead: false,
-        scaleBody: false,
-        randomFace: false,
-        fill: 'forwards',
-    })
+    schema.value.actions.push(
+        {
+            type: ['speak'],
+            content: drawStore.currentConfInfo.content,
+            duration: 0,
+            easing: 'linear',
+            delay: 0,
+            iterations: 1,
+            shakeHead: false,
+            scaleHead: false,
+            scaleBody: false,
+            randomFace: false,
+            fill: 'forwards',
+        }
+    )
 }
 const removeAction = (index) => {
     schema.value.actions.splice(index, 1)

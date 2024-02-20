@@ -1,7 +1,7 @@
 <template>
     <div class="item center" v-if="props.customData.type == 'speak'">
         <div class="content-label">内容：</div>
-        <el-input class="textarea" v-model="props.customData.content" :rows="2" type="textarea" placeholder="" />
+        <el-input class="textarea" v-model="content" :rows="2" type="textarea" placeholder="" />
     </div>
     <div class="item center">
         <div class="content-label">延时：</div>
@@ -27,10 +27,30 @@
     </div>
 </template>
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
+    name: {
+        type: String,
+        default: ''
+    },
     customData: {
         type: Object,
         default: ()=>{}
     }
+})
+const content = computed({
+    get() {
+        console.log('props.customData:', props.customData)
+        let content = props.customData?.content || [];
+        let data = content.find(item => {
+            return item.speak == props.name;
+        })
+        return data && data.content || '';
+    },
+    set(value) {
+        // props.customData.content = value; 
+    }
+    
 })
 </script>

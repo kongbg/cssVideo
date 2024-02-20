@@ -20,8 +20,15 @@ const useDrawStore = defineStore(
       textList: [], // 所有文本列表
       mode: 'desgin', // 模式
       dragElType: '', // 当前拖拽的元素类型
+
+
+      // 
+      videoTypes: [] // 视频总分类
     }),
     actions: {
+      setVideoTypes (data) {
+        this.videoTypes = data
+      },
       setDragElType(data) {
         // console.log('setDragElType:', data)
         this.dragElType = data.type;

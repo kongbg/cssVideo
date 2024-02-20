@@ -1,17 +1,26 @@
 <template>
     <div class="numes-list">
-        <div class="upload-text">
-            <el-upload class="upload-demo" :auto-upload="false" :show-file-list="false" :on-change="handleChange">
-                <el-button type="primary" size="small">新增</el-button>
-            </el-upload>
+        <div class="createVideo">
+            <el-button type="primary" size="small" @click="openCreateVideoDialog">新增</el-button>
         </div>
-        <div class="texts">
-            <div :class="['t-item', textId == item.id ? 'active' : '']" v-for="(item, index) in  drawStore.textList" :key="item.id"
-                @click="textClick(item)">
-                <span>{{ index + 1 }}</span>
-                <span class="name">{{ item.name }}</span>
-            </div>
-        </div>
+        <el-collapse class="collapse videoType" v-model="activeVideoType">
+            <div v-if="!drawStore.videoTypes.length">空</div>
+            <el-collapse-item class="item__warpper" :title="item.name" :name="item.id" v-for="(item, vindex) in drawStore.videoTypes" :key="item.id">
+                <div class="upload-text">
+                    <el-upload class="upload-demo" :auto-upload="false" :show-file-list="false" :on-change="data=>handleChange(data, vindex)">
+                        <el-button type="primary" size="small">新增</el-button>
+                    </el-upload>
+                </div>
+                <div class="texts">
+                    <div :class="['t-item', videoId == child.id ? 'active' : '']" v-for="(child, index) in  item.list" :key="child.id"
+                        @click="videoClick(child)">
+                        <span>{{ index + 1 }}</span>
+                        <span class="name">{{ child.name }}</span>
+                    </div>
+                </div>
+            </el-collapse-item>
+        </el-collapse>
+        
         <el-collapse class="collapse" v-model="activeNames">
             <el-collapse-item class="item__warpper" :title="item.name" :name="item.id" v-for="item in lists" :key="item.id">
                 <div class="items" :class="item.type">
@@ -24,6 +33,28 @@
                 </div>
             </el-collapse-item>
         </el-collapse>
+
+
+        <el-dialog
+            v-model="createVideoDialog"
+            title="Tips"
+            width="500"
+        >
+            <div class="name-warp">
+                <div class="label">视频分类名称：</div>
+                <div class="value">
+                    <el-input v-model="videoTypeName"/>
+                </div>
+            </div>
+            <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="createVideoDialog = false">取消</el-button>
+                <el-button type="primary" @click="createVideo">
+                确认
+                </el-button>
+            </div>
+            </template>
+        </el-dialog>
     </div>
 </template>
 <script setup>
@@ -136,71 +167,233 @@ let lists = ref([
 
 const activeNames = ref(['c9tfzfx7', '6b782wns', '33pllx82', 'des0950y', 'orxnp4v']);
 
-let textList = ref([]);
-let textId = ref(1);
-const textClick = (data) => {
-    drawStore.setTextData(data);
-    textId.value = data.id;
-};
-
 let drawConfigs = ref({});
 
+// 视频相关
+let createVideoDialog = ref(false);
+let videoTypeName = ref('')
+let videoId = ref('');
+const activeVideoType =  ref([])
+const openCreateVideoDialog = () => {
+    createVideoDialog.value = true;
+}
+const videoClick = (data) => {
+    videoId.value = data.id;
+}
+const createVideo = () => {
+    let videoTypes = drawStore.videoTypes;
+    let id = generateUniqueID();
+    let obj = {
+        id,
+        name: videoTypeName.value,
+        list: []
+    }
+    videoTypes.push(obj)
+    drawStore.setVideoTypes(videoTypes);
+    activeVideoType.value.push(id)
+    createVideoDialog.value = false;
+    videoTypeName.value = '';
+}
+
 // 上传结束
-const handleChange = (data) => {
-    let id = data.raw.uid;
-    let name = data.raw.name;
+const handleChange = (data, index) => {
+    let current = drawStore.videoTypes[index];
+    let id = generateUniqueID();
+    let name = data.raw.name.replace('.txt', '');
+    
     const reader = new FileReader();
     if (typeof FileReader === "undefined") {
         alert("您的浏览器不支持FileReader接口");
     }
     reader.onload = async (e) => {
         const text = e.target.result;
-
-        textList.value.push({ id, name });
-        drawStore.setTtextList(textList.value);
-
         // 解析配置文件
         let {confs} = await parseStr(text);
+        current.list.push({ id, name, content: text, confs });
+        videoId.value = id;
+        drawStore.setVideoTypes(drawStore.videoTypes);
+
+
         drawConfigs.value = Object.assign(drawConfigs.value, { id, name, confs })
         drawStore.setDrawConfigs(drawConfigs.value);
+        console.log(drawStore.videoTypes)
+        console.log(drawConfigs)
     };
     reader.readAsText(data.raw, "utf-8");
 };
 const parseStr = async (text) => {
     let confs = [];
     let speaks = {};
-    const list = text.split("\n").filter((item) => item.trim() !== "");
-    const bgSchmea = (await import('./common/background/schema.json')).default
-    list.forEach(async (item, index) => {
-        let arr = item.split("：");
-        if (arr.length) {
-            let speak = arr[0]?.trim();
-            let content = arr[1]?.trim();
+    let splitList = [];
 
+    // console.log('原文：',text)
+
+    function splitStr (str, type) {
+        // 抹平 '\r\n', '\n' 差异
+        str = str.replace('/\r/\n', '\n').replace('/\r', '\n');
+        // console.log('处理后：',str)
+        let tempStr = str.split("\n").filter((item) => item.trim() !== "");
+        tempStr = tempStr.map(item => {
+            let arr = item.split("：").filter(str => !!str);
+            if (arr.length) {
+                return {
+                    content: [
+                        {
+                            id: generateUniqueID(),
+                            speak: arr[0],
+                            content: arr.length > 1 ? arr[1] : '' 
+                        }
+                    ]
+                }
+            }
+        })
+        if (type == 2) {
+            let temp = [];
+            tempStr.forEach(element => {
+                temp.push(element.content[0])
+            });
+            return temp
+        }
+        return tempStr;
+    }
+
+    if (text.indexOf('###part') > -1) {
+        let tempList = text.split('###part').filter(item => !!item);
+        splitList = tempList.map(item => {
+            return {
+                content: splitStr(item, 2)
+            }
+        })
+
+    } else {
+        splitList = splitStr(text);
+    }
+
+    console.log('splitList:', splitList)
+
+
+
+    
+    
+    const bgSchmea = (await import('./common/background/schema.json')).default
+    const personSchmea = (await import('./common/person/schema.json')).default
+    splitList.forEach(async (item, index) => {
+        let comps = [];
+        // 提取对话中的人物情况
+        item.content.forEach(item => {
+            let { speak } = item;
             if (!speaks[speak]){
                 speaks[speak] = {};
             }
 
-            confs.push(
-                {
-                    id: generateUniqueID(),// id
-                    speak,// 说话人
-                    content,// 说话内容
-                    comps: [
-                        // 每个组件都有默认带有一个背景组件
+            let info = comps.find(item => {
+                return item.speak == speak;
+            })
+            if (!info) {
+                if (speak == '背景') {
+                    let schema = deepClone(bgSchmea);
+                    schema.actions = [
+                        {
+                            type: ['speak'],
+                            content: [item],
+                            duration: 0,
+                            easing: 'linear',
+                            delay: 0,
+                            iterations: 1,
+                            shakeHead: false,
+                            scaleHead: false,
+                            scaleBody: false,
+                            randomFace: false,
+                            fill: 'forwards',
+                        }
+                    ]
+                    comps.push(
                         {
                             type: 'background',
+                            speak,
                             id: generateUniqueID(),
                             compId: generateUniqueID(),
                             compName: 'background',
                             comp: null,
-                            schema: deepClone(bgSchmea)
+                            schema
                         }
-                    ]// 组件
+                    )
+                } else {
+                    console.log('新增任务组件')
+                    let schema = deepClone(personSchmea);
+                    schema.name = speak;
+                    schema.actions = [
+                        {
+                            type: ['speak'],
+                            content: [item],
+                            duration: 0,
+                            easing: 'linear',
+                            delay: 0,
+                            iterations: 1,
+                            shakeHead: false,
+                            scaleHead: false,
+                            scaleBody: false,
+                            randomFace: false,
+                            fill: 'forwards',
+                        }
+                    ]
+                    comps.push(
+                        {
+                            type: 'person',
+                            speak,
+                            id: generateUniqueID(),
+                            compId: generateUniqueID(),
+                            compName: 'person',
+                            comp: null,
+                            schema
+                        }
+                    )
                 }
-            );
-        }
+            } else {
+                info.schema.actions.push(
+                    {
+                        type: ['speak'],
+                        content: [item],
+                        duration: 0,
+                        easing: 'linear',
+                        delay: (info.schema.actions.length * 5),
+                        iterations: 1,
+                        shakeHead: false,
+                        scaleHead: false,
+                        scaleBody: false,
+                        randomFace: false,
+                        fill: 'forwards',
+                    }
+                )
+            }
+        })
+
+        // // 自动创建人物
+        // Object.keys(speaks).forEach(key => {
+        //     if (key == '背景') {
+        //         comps.push(
+        //             {
+        //                 type: 'background',
+        //                 id: generateUniqueID(),
+        //                 compId: generateUniqueID(),
+        //                 compName: 'background',
+        //                 comp: null,
+        //                 schema: deepClone(bgSchmea)
+        //             }
+        //         )
+        //     }
+        // })
+
+        confs.push(
+            {
+                id: generateUniqueID(),// id
+                content: item.content,// 说话内容
+                comps //组件
+            }
+        );
+        
     });
+    console.log(confs, speaks)
     return { confs, speaks};
 };
 const onDragStart = (data, parent, e) => {
@@ -228,6 +421,12 @@ const imgStyle = computed(()=>(data)=>{
 .numes-list {
     height: calc(100% - 84px);
     overflow: auto;
+
+    .createVideo {
+        text-align: right;
+        margin: 10px;
+        margin-bottom: 0;
+    }
     .upload-text {
         text-align: right;
         margin: 10px;
