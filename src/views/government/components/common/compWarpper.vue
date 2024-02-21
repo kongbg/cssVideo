@@ -4,8 +4,8 @@
         :ref="`warp-${props.compData.id}`"
         :class="[props.active  && props.compData.type != 'background' ? 'active' : '']"
         :style="customStyle"
+        v-drag
     >
-    <!-- {{ props.compData.id }} -->
         <slot></slot>
         <span class="draw-icon top-center"></span>
         <span class="draw-icon top"></span>
@@ -37,6 +37,76 @@ const props = defineProps({
     default: () => ({})
   }
 });
+// 拖拽改变大小
+const vDragSize = {
+    mounted: (el) => {
+        
+    }
+}
+// 推拽改变位置
+const vDrag = {
+    mounted: (el) => {
+        let x = 0;
+        let y = 0;
+        let l = 0;
+        let t = 0;
+        let nl = 0;
+        let nt = 0;
+        let dom = document.getElementById(`comp-${props.compData.id}`);
+        let elwidth = dom.offsetWidth;
+        let elheight = dom.offsetHeight;
+        let isDown = false;
+        //鼠标按下事件
+        el.onmousedown = function(e) {
+            //获取x坐标和y坐标
+            x = e.clientX;
+            y = e.clientY;
+
+            //获取左部和顶部的偏移量
+            l = el.offsetLeft;
+            t = el.offsetTop;
+            //开关打开
+            isDown = true;
+            //设置样式
+            el.style.cursor = "move";
+
+
+            //鼠标移动
+            let dhdrawcontent = document.getElementById('dh-draw-content');
+            dhdrawcontent.onmousemove = function(e) {
+                if (isDown == false) {
+                    return;
+                }
+                //获取x和y
+                let nx = e.clientX;
+                let ny = e.clientY;
+                //计算移动后的左偏移量和顶部的偏移量 限制左上
+                nl = nx - (x - l) <= 0 ? 0 : nx - (x - l);
+                nt = ny - (y - t) <= 0 ? 0 : ny - (y - t);
+
+                //限制右下
+                nl = nl >= dhdrawcontent.offsetWidth - elwidth ? dhdrawcontent.offsetWidth - elwidth : nl;
+                nt = nt >= dhdrawcontent.offsetHeight - elheight  ? dhdrawcontent.offsetHeight - elheight : nt;
+
+                el.style.left = nl + "px";
+                el.style.top = nt + "px";
+
+
+                //鼠标抬起事件
+                el.onmouseup = function() {
+                    props.compData.schema.property.position.value.x.value = nl;
+                    props.compData.schema.property.position.value.y.value = nt;
+                    //开关关闭
+                    isDown = false;
+                    el.style.cursor = "default";
+                }
+            };
+        };
+        
+        
+    }
+}
+
 
 //  根据子元素的xy定位
 const customStyle = computed(() => {
@@ -74,11 +144,25 @@ const deleteComp = () => {
     drawStore.setCurrentCompIndex(0)
     drawStore.setCurrentCompInfo(drawStore.drawConfigs.confs[drawStore.currentConfIndex].comps[0]);
 }
+
+const mousedown = (e) => {
+    console.log('mousedown:', e)
+}
+
+const mousemove = (e) => {
+    e.stopPropagation()
+    console.log('mousemove:', e)
+}
+const mouseup = (e) => {
+    console.log('mouseup:', e)
+}
+
 </script>
 <style lang="scss" scoped>
 .comp__warpper {
     position: absolute;
     border: 1px solid transparent;
+    cursor: pointer;
     .draw-icon{
         display: none;
     }

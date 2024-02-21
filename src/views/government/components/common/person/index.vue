@@ -248,45 +248,50 @@ async function doAction() {
           autoplay: false,
           loop: true
         });
-        // 转头
-        let scaleHead = anime({
-          targets: `#head-warp-${props.compData.id}`,
-          scaleX: [
-            { value: -1, duration: 0, delay: 1500 },
-            { value: 1, duration: 0, delay: 1500 }
-          ],
-          easing: 'linear',
-          autoplay: false,
-          loop:  Math.floor(Math.random() * 6)
-        });
-        if (item.shakeHead) shakeHead.play();
-        if (item.scaleHead) scaleHead.play();
+        // // 转头
+        // let scaleHead = anime({
+        //   targets: `#head-warp-${props.compData.id}`,
+        //   scaleX: [
+        //     { value: -1, duration: 0, delay: 1500 },
+        //     { value: 1, duration: 0, delay: 1500 }
+        //   ],
+        //   easing: 'linear',
+        //   autoplay: false,
+        //   loop:  Math.floor(Math.random() * 6)
+        // });
+        if (item.shakeHead) {
+          setTimeout(() => {
+            shakeHead.play()
+          }, item.delay * 1000)
+          
+        };
+        // if (item.scaleHead) scaleHead.play();
 
-        // 随机表情
-        if (item.randomFace) {
-          let url = props.compData.schema.property.face?.value.image.value;
-          ourl = url;
-          timer = setInterval(()=> {
-            // console.log('随机表情:', url)
-            let newUrl = url.replace(/(\d+)\.png/, `${Math.floor(Math.random() * 10)}.png`);
-            // console.log('随机表情:', newUrl, ourl)
-            props.compData.schema.property.face.value.image.value = newUrl;
-          }, 1000)
-        }
+        // // 随机表情
+        // if (item.randomFace) {
+        //   let url = props.compData.schema.property.face?.value.image.value;
+        //   ourl = url;
+        //   timer = setInterval(()=> {
+        //     // console.log('随机表情:', url)
+        //     let newUrl = url.replace(/(\d+)\.png/, `${Math.floor(Math.random() * 10)}.png`);
+        //     // console.log('随机表情:', newUrl, ourl)
+        //     props.compData.schema.property.face.value.image.value = newUrl;
+        //   }, 1000)
+        // }
 
         // 全身 左右翻转
-        let person = anime({
-          targets: `#person-${props.compData.id}`,
-          keyframes: [
-            {scaleX: 1, delay: 1500},
-            {scaleX: -1, delay: 1500},
-          ],
-          duration: 0,
-          easing: 'linear',
-          autoplay: false,
-          loop: true
-        });
-        if (item.scaleBody) person.play();
+        // let person = anime({
+        //   targets: `#person-${props.compData.id}`,
+        //   keyframes: [
+        //     {scaleX: 1, delay: 1500},
+        //     {scaleX: -1, delay: 1500},
+        //   ],
+        //   duration: 0,
+        //   easing: 'linear',
+        //   autoplay: false,
+        //   loop: true
+        // });
+        // if (item.scaleBody) person.play();
         await speak(item.content.content);
 
 
@@ -294,9 +299,9 @@ async function doAction() {
         props.compData.schema.property.face.value.image.value = ourl;
         shakeHead.restart();
         shakeHead.pause();
-        person.restart();
-        person.pause();
-        scaleHead.pause();
+        // person.restart();
+        // person.pause();
+        // scaleHead.pause();
       }
       if (item.type.length > 1 && item.type[0] === 'move') {
         if (item.type[1] === 'translate') {

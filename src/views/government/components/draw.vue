@@ -6,7 +6,7 @@
             <el-button @click="clear" type="primary" size="small">清空</el-button>
         </div>
 
-        <div ref="dh-draw-content" class="dh-draw-content" @dragover="(e)=>dragover(e, drawStore.dragElType)" @drop="drop">
+        <div id="dh-draw-content" ref="dh-draw-content" :class="['dh-draw-content', drawStore.mode == 'preview' ? 'preview' : '']" @dragover="(e)=>dragover(e, drawStore.dragElType)" @drop="drop">
             <comp-warpper
                 v-for="(item, index) in comps"
                 :key='item.id'
@@ -28,7 +28,7 @@
     </div>
 </template>
 <script setup>
-import { ref, shallowRef, getCurrentInstance, computed, nextTick } from 'vue';
+import { ref, shallowRef, getCurrentInstance, computed, nextTick, onMounted } from 'vue';
 import { deepClone } from '@/utils';
 import { generateUniqueID, } from './utils'
 const { proxy } = getCurrentInstance()
@@ -36,7 +36,20 @@ import compWarpper from './common/compWarpper.vue';
 import person from './common/person/index.vue';
 import background from './common/background/index.vue';
 import useDrawStore from '@/store/modules/draw';
+import { useRoute } from "vue-router"
 let drawStore = useDrawStore();
+
+drawStore.setMode('desgin');
+
+onMounted(()=>{
+    const route = useRoute(); 
+    console.log('route:', route)
+    const { query } = route;
+    const mode = query.mode;
+    if (mode === 'preview') {
+        preview()
+    }
+})
 
 // 缓存组件，方便后续查询
 let comMap = {
@@ -61,9 +74,10 @@ let comps = computed(()=>{
 })
 
 function preview() {
-    console.log(drawStore.mode)
+    // console.log(drawStore.mode)
     drawStore.setMode('preview');
-    nextConf(0)
+    start()
+    // nextConf(0)
 }
 const clear = () => {
     sessionStorage.clear();
@@ -277,6 +291,12 @@ function sleep(delay = 100) {
         width: 720px;
         height: 405px;
         position: relative;
+        &.preview {
+            position: fixed;
+            z-index: 1002;
+            top: 0;
+            left: 0;
+        }
     }
 }
 </style>
