@@ -6,19 +6,19 @@
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.width.label }}:</div>
-            <el-input-number v-model="props.compData.width.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.width.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.height.label }}:</div>
-            <el-input-number v-model="props.compData.height.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.height.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.x.label }}:</div>
-            <el-input-number v-model="props.compData.x.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.x.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.y.label }}:</div>
-            <el-input-number v-model="props.compData.y.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.y.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
         </div>
     </div>
 </template>

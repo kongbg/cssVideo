@@ -177,14 +177,14 @@ const compChange = (e) => {
         updateComp({ compId, type, id });
     }
 
-    // 当前帧执行完成，切换下一帧
+    // 当前场景执行完成，切换下一帧
     if (action == 'completed') {
-        console.log('当前帧执行完成，切换下一帧')
+        console.log('当前场景执行完成，切换下一帧')
     }
 }
 
 let schema = ref({});
-// 选择当前帧的其他组件
+// 选择当前场景的其他组件
 async function compClick(data, index) {
     drawStore.setCurrentCompIndex(index)
     drawStore.setCurrentCompInfo(data);

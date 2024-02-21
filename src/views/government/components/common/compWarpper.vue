@@ -71,6 +71,8 @@ provide('setAnimate', setAnimate)
 
 const deleteComp = () => {
     drawStore.drawConfigs.confs[drawStore.currentConfIndex].comps.splice(drawStore.currentCompIndex, 1);
+    drawStore.setCurrentCompIndex(0)
+    drawStore.setCurrentCompInfo(drawStore.drawConfigs.confs[drawStore.currentConfIndex].comps[0]);
 }
 </script>
 <style lang="scss" scoped>

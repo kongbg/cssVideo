@@ -67,6 +67,7 @@ function preview() {
 }
 const clear = () => {
     sessionStorage.clear();
+    localStorage.clear();
     window.location.reload();
 }
 
@@ -79,7 +80,6 @@ function nextConf(index) {
 }
 
 async function start() {
-
     // 初始化
     drawStore.setCurrentConfIndex(0);
     drawStore.setCurrentConfInfo(drawStore.confs[0]);
@@ -135,11 +135,8 @@ async function start() {
  */
 async function updateComp(data) {
     // console.log('drawStore.currentConfInfo.comps:', drawStore.currentConfInfo.comps)
-    debugger
     let { targetType, targetId, sourceType, options } = data;
-
-    console.log(targetType, targetId, sourceType, options)
-
+    // console.log(targetType, targetId, sourceType, options)
     // 非背景组件拖入背景中-修改背景
     if (sourceType === 'background' && targetType === 'background') {
         console.log('非背景组件拖入背景中-修改背景')
@@ -154,8 +151,8 @@ async function updateComp(data) {
     // 非背景组件拖入背景中-新增
     if(sourceType != 'background' && targetType === 'background') {
         // 非背景组件拖入背景中
-        console.log('非背景组件拖入背景中-新增')
         let temp = deepClone(await getSchema(sourceType));
+        
         temp.property.position.value.x.value = options.x - options.px;
         temp.property.position.value.y.value = options.y - options.py;
         temp.property.background.value.image.url = options.url;
@@ -163,16 +160,19 @@ async function updateComp(data) {
         if (options.headUrl) temp.property.head.value.image.value = options.headUrl;
         if (options.bodyUrl) temp.property.body.value.image.value = options.bodyUrl;
 
-        drawStore.currentConfInfo.comps.push(
-            {
-                type: sourceType,
-                id: generateUniqueID(),
-                compId: generateUniqueID(),
-                compName: sourceType,
-                comp: null,
-                schema: temp
-            }
-        )
+        let playload = {
+            type: sourceType,
+            id: generateUniqueID(),
+            compId: generateUniqueID(),
+            compName: sourceType,
+            comp: null,
+            schema: temp
+        }
+        drawStore.currentConfInfo.comps.push(playload)
+
+        console.log('非背景组件拖入背景中-新增', playload)
+
+        compClick(playload, drawStore.currentConfInfo.comps.length - 1)
     }
 
     // 非背景组件拖入非背景中-修改局部
@@ -198,14 +198,14 @@ const compChange = (e) => {
         updateComp(data);
     }
 
-    // 当前帧执行完成，切换下一帧
+    // 当前场景执行完成，切换下一帧
     if (action == 'completed') {
-        console.log('当前帧执行完成，切换下一帧')
+        console.log('当前场景执行完成，切换下一帧')
     }
 }
 
 let schema = ref({});
-// 选择当前帧的其他组件
+// 选择当前场景的其他组件
 async function compClick(data, index) {
     drawStore.setCurrentCompIndex(index)
     drawStore.setCurrentCompInfo(data);
@@ -231,19 +231,19 @@ const dragover = (e, dragElType) => {
 
 // 放置拖拽元素
 const drop = (e) => {
-    console.log('e:', e)
     let classList = [...e.target.classList]
     let targetType = classList.includes('backgroundImg') ? 'background' : '';
     let targetId = e.target.id;
-
-    let data = JSON.parse(e.dataTransfer.getData('text/plain'))
-    console.log('data:', data)
-    let options = {
-        ...data,
-        x: e.offsetX,
-        y: e.offsetY
+    let jsonStr = e.dataTransfer.getData('text/plain');
+    if (jsonStr.includes('{')&&jsonStr.includes('}')) {
+        let data = JSON.parse(e.dataTransfer.getData('text/plain'))
+        let options = {
+            ...data,
+            x: e.offsetX,
+            y: e.offsetY
+        }
+        updateComp({ targetType, targetId, sourceType: data.type, options });
     }
-    updateComp({ targetType, targetId, sourceType: data.type, options });
 }
 
 let customStyle = ref({});

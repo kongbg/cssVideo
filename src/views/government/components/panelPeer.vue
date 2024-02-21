@@ -3,7 +3,7 @@
         <div class="title" v-if="!isEmpty">
             <div class="label">组件名称：</div>
             <div class="value">
-                <el-input v-model="schema.name" />
+                <el-input v-model="schema.name" @change="nameChange"/>
             </div>
         </div>
         <div class="propertys">
@@ -76,14 +76,14 @@ const activeNames = computed(() => {
 
 const activeNames2 = ref(['action'])
 
-const addAction = () => {
+const addAction = (textInfo={}, delay=0) => {
     schema.value.actions.push(
         {
             type: ['speak'],
-            content: drawStore.currentConfInfo.content,
+            content: textInfo,
             duration: 0,
             easing: 'linear',
-            delay: 0,
+            delay,
             iterations: 1,
             shakeHead: false,
             scaleHead: false,
@@ -98,6 +98,21 @@ const removeAction = (index) => {
 }
 const change = ({action, data}) => {
     console.log(action, data)
+}
+const nameChange = (name) => {
+
+    // 清除之前的对话动作
+    schema.value.actions = schema.value.actions.filter(item => {
+        return !item.type.includes('speak');
+    })
+
+    // 新增新的对话动作
+    const contents = drawStore.currentConfInfo.content;
+    contents.filter(item => {
+        return item.speak === name;
+    }).forEach((item, index) => {
+        addAction(item, 10*index);
+    });
 }
 </script>
 

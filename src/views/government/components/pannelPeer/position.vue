@@ -9,17 +9,17 @@
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.x.label }}:</div>
-            <el-input-number v-model="props.compData.x.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.x.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
             <div class="unit">{{ props.compData.unit.value }}</div>
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.y.label }}:</div>
-            <el-input-number v-model="props.compData.y.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.y.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
             <div class="unit">{{ props.compData.unit.value }}</div>
         </div>
         <div class="p-item">
             <div class="label">{{ props.compData.zIndex.label }}:</div>
-            <el-input-number v-model="props.compData.zIndex.value" class="mx-4" :min="1" :max="9999" controls-position="right"></el-input-number>
+            <el-input-number v-model="props.compData.zIndex.value" class="mx-4" :min="0" :max="9999" controls-position="right"></el-input-number>
         </div>
     </div>
 </template>

@@ -94,7 +94,8 @@ let lists = ref([
                 id: '6fdok0uf',
                 name: "人物1",
                 url: "assets/images/person/1/1.png",
-                headUrl: "assets/images/person/1/1_head_93x80@7.png",
+                // headUrl: "assets/images/person/1/1_head_93x80@7.png",
+                headUrl: "assets/images/person/1/1_head_93x80x42x42x15x28x0x7.png",
                 bodyUrl: "assets/images/person/1/1_body_93x112.png",
                 compName: "person",
             },
@@ -102,7 +103,7 @@ let lists = ref([
                 id: '6fdok0uk',
                 name: "人物2",
                 url: "assets/images/person/2/2.png",
-                headUrl: "assets/images/person/2/2_head_54x65@8.png",
+                headUrl: "assets/images/person/2/2_head_54x65x25x25x18x32x0x10.png",
                 bodyUrl: "assets/images/person/2/2_body_54x68.png",
                 compName: "person",
             },
@@ -295,7 +296,7 @@ const parseStr = async (text) => {
                     schema.actions = [
                         {
                             type: ['speak'],
-                            content: [item],
+                            content: item,
                             duration: 0,
                             easing: 'linear',
                             delay: 0,
@@ -318,42 +319,43 @@ const parseStr = async (text) => {
                             schema
                         }
                     )
-                } else {
-                    console.log('新增任务组件')
-                    let schema = deepClone(personSchmea);
-                    schema.name = speak;
-                    schema.actions = [
-                        {
-                            type: ['speak'],
-                            content: [item],
-                            duration: 0,
-                            easing: 'linear',
-                            delay: 0,
-                            iterations: 1,
-                            shakeHead: false,
-                            scaleHead: false,
-                            scaleBody: false,
-                            randomFace: false,
-                            fill: 'forwards',
-                        }
-                    ]
-                    comps.push(
-                        {
-                            type: 'person',
-                            speak,
-                            id: generateUniqueID(),
-                            compId: generateUniqueID(),
-                            compName: 'person',
-                            comp: null,
-                            schema
-                        }
-                    )
-                }
+                } 
+                // else {
+                //     console.log('新增任务组件')
+                //     let schema = deepClone(personSchmea);
+                //     schema.name = speak;
+                //     schema.actions = [
+                //         {
+                //             type: ['speak'],
+                //             content: [item],
+                //             duration: 0,
+                //             easing: 'linear',
+                //             delay: 0,
+                //             iterations: 1,
+                //             shakeHead: false,
+                //             scaleHead: false,
+                //             scaleBody: false,
+                //             randomFace: false,
+                //             fill: 'forwards',
+                //         }
+                //     ]
+                //     comps.push(
+                //         {
+                //             type: 'person',
+                //             speak,
+                //             id: generateUniqueID(),
+                //             compId: generateUniqueID(),
+                //             compName: 'person',
+                //             comp: null,
+                //             schema
+                //         }
+                //     )
+                // }
             } else {
                 info.schema.actions.push(
                     {
                         type: ['speak'],
-                        content: [item],
+                        content: item,
                         duration: 0,
                         easing: 'linear',
                         delay: (info.schema.actions.length * 5),

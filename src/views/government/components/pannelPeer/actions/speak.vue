@@ -42,14 +42,16 @@ const props = defineProps({
 const content = computed({
     get() {
         console.log('props.customData:', props.customData)
-        let content = props.customData?.content || [];
-        let data = content.find(item => {
-            return item.speak == props.name;
-        })
-        return data && data.content || '';
+        // let content = props.customData?.content || [];
+        // let data = content.find(item => {
+        //     return item.speak == props.name;
+        // })
+        // return data && data.content || '';
+        return props.customData.content.content;
     },
     set(value) {
-        // props.customData.content = value; 
+        console.log('props.customData:', props.customData)
+        props.customData.content.content = value;
     }
     
 })

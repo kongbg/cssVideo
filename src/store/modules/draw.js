@@ -69,7 +69,13 @@ const useDrawStore = defineStore(
     },
     // 开启数据持久化
     persist: {
-      enabled: true
+      enabled: true,
+      strategies: [
+        {
+          key: 'draw',
+          storage: localStorage,
+        },
+      ],
     }
 
   })

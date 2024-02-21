@@ -47,24 +47,41 @@ function setSize() {
     sizeInfo.height.value = h
   }
 }
-function getWH(imagePath) {
+function getImageInfo(imagePath) {
   // 使用正则表达式匹配字符串中的数字
-  let regex = imagePath.indexOf('@') > -1 ? /(\d+)x(\d+)@(\d+)/ : /(\d+)x(\d+)/;
+  // /头部宽x头部高x表情宽x表情高x表情x轴坐标x表情y轴坐标x表情x轴偏移x表情y轴偏移/
+  let regex = imagePath.indexOf('head') > -1 ? /(\d+)x(\d+)x(\d+)x(\d+)x(\d+)x(\d+)x(\d+)x(\d+)/ : /(\d+)x(\d+)/;
   let matches = imagePath.match(regex);
 
   if (matches) {
-      let width = parseInt(matches[1], 10);
-      let height = parseInt(matches[2], 10);
-      let diy = parseInt(matches[3], 10) || 0;
+      let width = parseInt(matches[1], 10) || 0;
+      let height = parseInt(matches[2], 10) || 0;
+      let faceWidth = parseInt(matches[3], 10) || 0;
+      let faceHeight = parseInt(matches[4], 10) || 0;
+      let faceX = parseInt(matches[5], 10) || 0;
+      let faceY = parseInt(matches[6], 10) || 0;
+      let faceDix = parseInt(matches[7], 10) || 0;
+      let faceDiy = parseInt(matches[8], 10) || 0;
       return {
         width,
         height,
-        diy
+        faceWidth,
+        faceHeight,
+        faceX,
+        faceY,
+        faceDix,
+        faceDiy
       }
   } else {
       return {
         width: 0,
-        height: 0
+        height: 0,
+        faceWidth: 0,
+        faceHeight: 0,
+        faceX: 0,
+        faceY: 0,
+        faceDix: 0,
+        faceDiy: 0
       }
   }
 }
@@ -77,15 +94,18 @@ const customStyle = computed(() => {
 })
 
 const headStyle = computed(() => {
-  debugger
   let info = props.compData.schema.property.head?.value;
   let url = info.image.value;
-  let {width, height, diy} = getWH(url);
 
-  info.x.value == 0 ? info.x.value = 0 : '';
-  info.y.value == 0 ? info.y.value = diy : '';
-  info.width.value == 0 ? info.width.value = width : '';
-  info.height.value == 0 ? info.height.value = height : '';
+  // 未初始化，从图片信息中拿到头部，身体，表情的尺寸定位信息
+  if (!props.compData.schema.property.head.inited) {
+    let { width, height, faceWidth, faceHeight, faceX, faceY, faceDix, faceDiy } = getImageInfo(url);
+    info.x.value = 0;
+    info.y.value = faceDiy;
+    info.width.value = width;
+    info.height.value = height;
+    props.compData.schema.property.head.inited = true;
+  }
 
   setSize()
 
@@ -106,12 +126,16 @@ const headStyle = computed(() => {
 const bodyStyle = computed(() => {
   let info = props.compData.schema.property.body?.value;
   let url = info.image.value;
-  let {width, height} = getWH(url);
 
-  info.x.value == 0 ? info.x.value = 0 : '';
-  info.y.value == 0 ? info.y.value = 0 : '';
-  info.width.value == 0 ? info.width.value = width : '';
-  info.height.value == 0 ? info.height.value = height : '';
+  // 未初始化，从图片信息中拿到头部，身体，表情的尺寸定位信息
+  if (!props.compData.schema.property.body.inited) {
+    let { width, height, faceWidth, faceHeight, faceX, faceY, faceDix, faceDiy } = getImageInfo(url);
+    info.x.value = 0;
+    info.y.value = 0;
+    info.width.value = width;
+    info.height.value = height;
+    props.compData.schema.property.body.inited = true;
+  }
 
   setSize();
 
@@ -131,7 +155,18 @@ const bodyStyle = computed(() => {
 const faceStyle = computed(() => {
   let info = props.compData.schema.property.face?.value;
   let url = info.image.value;
-  // let {width, height} = getWH(url);
+
+  // 未初始化，从图片信息中拿到头部，身体，表情的尺寸定位信息
+  if (!props.compData.schema.property.face.inited) {
+    let headUrl = props.compData.schema.property.head?.value.image.value;
+    let { width, height, faceWidth, faceHeight, faceX, faceY, faceDix, faceDiy } = getImageInfo(headUrl);
+    info.x.value = faceX;
+    info.y.value = faceY;
+    info.width.value = faceWidth;
+    info.height.value = faceHeight;
+    props.compData.schema.property.face.inited = true;
+  }
+
   if (url) {
     return {
       backgroundImage: `url(${getImgUrl(url)})`,
