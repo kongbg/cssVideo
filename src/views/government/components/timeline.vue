@@ -7,7 +7,7 @@
                         <el-icon><More /></el-icon>
                     </template>
                     <div class="actions">
-                        <div class="item" v-if="!!index" @click="copyPrior(index)">复制上个页面布局</div>
+                        <div class="item" style="cursor: pointer;" v-if="!!index" @click="copyPrior(index)">复制上个页面布局</div>
                     </div>
                 </el-popover>
             </div>
@@ -20,6 +20,7 @@ import { ref, computed, getCurrentInstance, watch } from 'vue';
 import Image from '@/components/Image'
 import useDrawStore from '@/store/modules/draw';
 import { deepClone } from '@/utils';
+import { generateUniqueID, } from './utils'
 let drawStore = useDrawStore();
 
 let timeline = computed(()=>{
@@ -28,8 +29,9 @@ let timeline = computed(()=>{
         let info = item.comps.find(v=>{
             return v.type == 'background';
         })
-        // todo 判断　check
-        item.imageUrl = info.schema.property.background.value.image.url;
+        if (info) {
+            item.imageUrl = info.schema.property.background.value.image.url;
+        }
     })
     return confs;
 })
@@ -53,13 +55,33 @@ const timeItemClick = (index)=>{
     // drawStore.setCurrentConfIndex(index);
 }
 const copyPrior = (index) => {
-    let data = getConfigByIndex(index-1);
-    console.log('data:', data)
-    timeline.value[index].comps = data.comps;
-    timeline.value[index].imageUrl = data.imageUrl;
+    let oldData = getConfigByIndex(index);
+    let newData = getConfigByIndex(index-1);
+    console.log('newData:', oldData, newData)
+
+    // timeline.value[index].comps = []
+    // newData.comps.forEach(item => {
+    //     item.id = generateUniqueID();
+    //     item.compId = generateUniqueID();
+    //     if (item.type == 'background') {
+    //         let oldData = timeline.value[index].comps.find(info=>info.type == "background");
+    //         let oldActions = oldData.schema.actions;
+    //         let oldName = oldData.schema.name;
+
+    //         item.schema.name = oldName;
+    //         item.schema.actions = oldActions;
+    //     } else {
+
+    //         item.schema.actions = []
+    //     }
+
+    //     timeline.value[index].comps.push(item)
+    // })
+
+    // timeline.value[index].comps = newData.comps;
+    // timeline.value[index].imageUrl = newData.imageUrl;
 }
 function getConfigByIndex (index) {
-    // console.log('timeline:',index, timeline.value[index]);
     return deepClone(timeline.value[index]);
 
 }
@@ -86,11 +108,6 @@ function getConfigByIndex (index) {
             top: 0px;
             right: 5px;
             cursor: pointer;
-            .actions {
-                .item {
-                    cursor: pointer;
-                }
-            }
         }
         .img {
             width: 100%;

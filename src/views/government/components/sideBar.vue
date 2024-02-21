@@ -259,6 +259,8 @@ const parseStr = async (text) => {
     }
 
     if (text.indexOf('###part') > -1) {
+        // console.warn('请采用单个对话方式写脚本')
+        // return false;
         let tempList = text.split('###part').filter(item => !!item);
         splitList = tempList.map(item => {
             return {
@@ -270,14 +272,9 @@ const parseStr = async (text) => {
         splitList = splitStr(text);
     }
 
-    console.log('splitList:', splitList)
-
-
-
-    
-    
     const bgSchmea = (await import('./common/background/schema.json')).default
     const personSchmea = (await import('./common/person/schema.json')).default
+    // console.log('splitList:', deepClone(splitList))
     splitList.forEach(async (item, index) => {
         let comps = [];
         // 提取对话中的人物情况
@@ -393,7 +390,6 @@ const parseStr = async (text) => {
                 comps //组件
             }
         );
-        
     });
     console.log(confs, speaks)
     return { confs, speaks};

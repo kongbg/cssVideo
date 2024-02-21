@@ -33,7 +33,83 @@ const useUserStore = defineStore(
       // 获取用户信息
       getInfo() {
         return new Promise((resolve, reject) => {
-          getInfo().then(res => {
+          // getInfo().then(res => {
+            let res = {
+              "msg": "操作成功",
+              "code": 200,
+              "permissions": [
+                  "*:*:*"
+              ],
+              "roles": [
+                  "admin"
+              ],
+              "user": {
+                  "createBy": "admin",
+                  "createTime": "2023-04-23 16:11:38",
+                  "updateBy": null,
+                  "updateTime": null,
+                  "remark": "管理员",
+                  "userId": 1,
+                  "deptId": 103,
+                  "userName": "admin",
+                  "nickName": "若依",
+                  "email": "ry@163.com",
+                  "phonenumber": "15888888888",
+                  "sex": "1",
+                  "avatar": "",
+                  "password": "$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2",
+                  "status": "0",
+                  "delFlag": "0",
+                  "loginIp": "219.147.15.58",
+                  "loginDate": "2024-02-21T16:39:28.000+08:00",
+                  "dept": {
+                      "createBy": null,
+                      "createTime": null,
+                      "updateBy": null,
+                      "updateTime": null,
+                      "remark": null,
+                      "deptId": 103,
+                      "parentId": 101,
+                      "ancestors": "0,100,101",
+                      "deptName": "研发部门",
+                      "orderNum": 1,
+                      "leader": "若依",
+                      "phone": null,
+                      "email": null,
+                      "status": "0",
+                      "delFlag": null,
+                      "parentName": null,
+                      "children": []
+                  },
+                  "roles": [
+                      {
+                          "createBy": null,
+                          "createTime": null,
+                          "updateBy": null,
+                          "updateTime": null,
+                          "remark": null,
+                          "roleId": 1,
+                          "roleName": "超级管理员",
+                          "roleKey": "admin",
+                          "roleSort": 1,
+                          "dataScope": "1",
+                          "menuCheckStrictly": false,
+                          "deptCheckStrictly": false,
+                          "status": "0",
+                          "delFlag": null,
+                          "flag": false,
+                          "menuIds": null,
+                          "deptIds": null,
+                          "permissions": null,
+                          "admin": true
+                      }
+                  ],
+                  "roleIds": null,
+                  "postIds": null,
+                  "roleId": null,
+                  "admin": true
+              }
+            }
             const user = res.user
             const avatar = (user.avatar == "" || user.avatar == null) ? defAva : import.meta.env.VITE_APP_BASE_API + user.avatar;
 
@@ -47,9 +123,9 @@ const useUserStore = defineStore(
             this.name = user.userName
             this.avatar = avatar
             resolve(res)
-          }).catch(error => {
-            reject(error)
-          })
+          // }).catch(error => {
+          //   reject(error)
+          // })
         })
       },
       // 退出系统

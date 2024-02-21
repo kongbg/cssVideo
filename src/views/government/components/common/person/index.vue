@@ -287,7 +287,7 @@ async function doAction() {
           loop: true
         });
         if (item.scaleBody) person.play();
-        await speak(item.content);
+        await speak(item.content.content);
 
 
         clearInterval(timer);

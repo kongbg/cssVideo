@@ -55,7 +55,7 @@ async function doAction() {
   actions.forEach(item => {
     let p = new Promise(async (resolve, reject) => {
       if (item.type.length == 1 && item.type[0] === 'speak') {
-        await speak(item.content);
+        await speak(item.content.content);
       }
       resolve(true);
     })
