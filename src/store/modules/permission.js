@@ -61,6 +61,18 @@ const usePermissionStore = defineStore(
               path: 'home2'
             },
             {
+              component: 'government3/home/index',
+              hidden: false,
+              meta: {
+                title: '首页3',
+                link: '',
+                onCache: false,
+                icon: 'user'
+              },
+              name: 'GovernmentHome3',
+              path: 'home3'
+            },
+            {
               hidden: false,
               meta: {
                 title: '跨区域排放建筑垃圾登记管理',
